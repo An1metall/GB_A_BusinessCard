@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="card_names">
+        <item>Name</item>
+        <item>E-mail</item>
+        <item>Skype</item>
+        <item>IT Skills</item>
+    </string-array>
+    <string-array name="card_data">
+        <item>Roman Bardashov</item>
+        <item>bardashovrv@gmaill.com</item>
+        <item>animetall02</item>
+        <item>- Languages: Java, C#, XML, SQL, HTML, CMD, BASH\n\n- Tools: Visual Studio, IDEA, Android Studio, SQLiteStudio, Dreamweaver, Photoshop, Logic Pro\n\n- Operating systems: Windows, Linux, Mac OS X
+        </item>
+    </string-array>
+    <integer-array name="card_pics">
+        <item>@drawable/user</item>
+        <item>@drawable/email</item>
+        <item>@drawable/skype</item>
+        <item>@drawable/skills</item>
+    </integer-array>
+</resources>
