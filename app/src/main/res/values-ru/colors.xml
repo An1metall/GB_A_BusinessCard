@@ -9,4 +9,13 @@
     <color name="colorTextPrimary">#212121</color>
     <color name="colorTextSecondary">#212121</color>
     <color name="colorDivider">#B6B6B6</color>
+
+    <!-- HomeWork -->
+    <color name="colorBlack">#000</color>
+    <color name="colorRed">#F00</color>
+    <color name="colorGreen">#0F0</color>
+    <color name="colorBlue">#00F</color>
+    <color name="colorYellow">#ffd500</color>
+
+    <color name="txt_color">#FFFF1111</color>
 </resources>
