@@ -61,9 +61,9 @@ public class MainActivity extends Activity {
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (language_code.equals(LANGUAGE_CODE_RU)) {
-            fab.setImageResource(R.drawable.ru);
-        } else {
             fab.setImageResource(R.drawable.en);
+        } else {
+            fab.setImageResource(R.drawable.ru);
         }
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
