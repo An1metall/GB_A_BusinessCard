@@ -14,9 +14,9 @@
         </item>
     </string-array>
     <integer-array name="card_pics">
-        <item>@drawable/user</item>
+<!--        <item>@drawable/user</item>
         <item>@drawable/email</item>
         <item>@drawable/skype</item>
-        <item>@drawable/skills</item>
+        <item>@drawable/skills</item>-->
     </integer-array>
 </resources>
