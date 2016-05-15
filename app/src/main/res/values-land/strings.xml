@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Business Card</string>
-    <string name="header">header</string>
-    <string name="about_me">ABOUT ME</string>
-
-    <string name="my_txt">Альбомная ориентация</string>
-</resources>
