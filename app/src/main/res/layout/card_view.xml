@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cv"
-        android:elevation="2dp">
+        android:elevation="4dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -19,6 +19,7 @@
             android:background="@color/colorBackgroundWhite"
             android:padding="16dp"
             >
+
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -27,6 +28,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,6 +38,7 @@
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="@dimen/text_size_headline"
                 />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,7 +48,9 @@
                 android:textSize="@dimen/text_size_body"
                 android:layout_below="@+id/card_name"
                 />
+
         </RelativeLayout>
+
     </android.support.v7.widget.CardView>
 
 </LinearLayout>
