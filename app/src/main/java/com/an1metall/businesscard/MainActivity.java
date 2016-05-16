@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         resources = getResources();
         this.initializeData();
 
-        rvAdapter = new RecyclerViewAdapter(cards);
+        rvAdapter = new RecyclerViewAdapter(this, cards);
         recyclerView.setAdapter(rvAdapter);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
