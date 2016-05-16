@@ -4,12 +4,19 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +27,11 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter rvAdapter;
     private RecyclerView.LayoutManager rvLayoutManager;
-    private FloatingActionButton fab;
+    private LinearLayout titleContainer;
+    private TextView title;
+    private AppBarLayout appBarLayout;
+    private Toolbar toolbar;
+
     private List<Card> cards;
     private Resources resources;
 
@@ -28,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private final String LANGUAGE_CODE_RU = "ru";
     private final String LANGUAGE_CODE_EN = "en";
     private String language_code = LANGUAGE_CODE_RU;
+
+    private final String LOG_TAG = "testlog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
         conf.locale = new Locale(language_code.toLowerCase());
         res.updateConfiguration(conf, dm);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.image_behavior);
+
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        title = (TextView) findViewById(R.id.main_textview_title);
+        titleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
+        appBarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
+
+        toolbar.inflateMenu(R.menu.main_menu);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -57,19 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         rvAdapter = new RecyclerViewAdapter(this, cards);
         recyclerView.setAdapter(rvAdapter);
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-
-        if (language_code.equals(LANGUAGE_CODE_RU)) {
-            fab.setImageResource(R.drawable.en);
-        } else {
-            fab.setImageResource(R.drawable.ru);
-        }
-        fab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                changeLocale();
-            }
-        });
     }
 
     private void initializeData() {
@@ -82,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void changeLocale() {
+    public void changeLocale(MenuItem item) {
+        Log.d(LOG_TAG, "changeLocale ran");
         Intent intent = getIntent();
         if (language_code.equals(LANGUAGE_CODE_RU)) {
             language_code = LANGUAGE_CODE_EN;
@@ -93,6 +101,4 @@ public class MainActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-
-
 }
