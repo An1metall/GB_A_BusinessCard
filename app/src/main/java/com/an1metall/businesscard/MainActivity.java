@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private final String LANGUAGE_CODE_EN = "en";
     private String language_code = LANGUAGE_CODE_RU;
 
-    private final String LOG_TAG = "testlog";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,17 +56,11 @@ public class MainActivity extends AppCompatActivity {
         res.updateConfiguration(conf, dm);
 
         setContentView(R.layout.image_behavior);
-
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        title = (TextView) findViewById(R.id.main_textview_title);
-        titleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
-        appBarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
+        bindActivity();
 
         toolbar.inflateMenu(R.menu.main_menu);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-
         rvLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(rvLayoutManager);
 
@@ -77,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
 
         rvAdapter = new RecyclerViewAdapter(this, cards);
         recyclerView.setAdapter(rvAdapter);
+    }
+
+    private void bindActivity(){
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        title = (TextView) findViewById(R.id.main_textview_title);
+        titleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
+        appBarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     }
 
     private void initializeData() {
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeLocale(MenuItem item) {
-        Log.d(LOG_TAG, "changeLocale ran");
         Intent intent = getIntent();
         if (language_code.equals(LANGUAGE_CODE_RU)) {
             language_code = LANGUAGE_CODE_EN;

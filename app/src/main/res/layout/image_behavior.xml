@@ -127,14 +127,14 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+<!--        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/avatar"
             android:layout_gravity="center_horizontal"
             app:civ_border_color="@color/colorBackgroundWhite"
             app:civ_border_width="2dp"
-            />
+            />-->
 
     </android.support.design.widget.CoordinatorLayout>
 
