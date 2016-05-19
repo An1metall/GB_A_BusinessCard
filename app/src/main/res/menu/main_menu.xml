@@ -5,5 +5,4 @@
     <item
         android:title="@string/menu_switch_language"
         android:onClick="changeLocale"/>
-
 </menu>
