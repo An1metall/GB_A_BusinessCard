@@ -3,4 +3,9 @@
     <string name="header">header</string>
     <string name="about_me">ОБО МНЕ</string>
     <string name="menu_switch_language">Переключить язык</string>
+    <string name="invite_to_meeting">Приглашаем вас на встречу</string>
+    <string name="date_picker_ok">Готово</string>
+    <string name="date_piker_cancel">Отмена</string>
+    <string name="email_account">Настройте учетную запись e-mail</string>
+    <string name="skype_not_found">Skype не найден</string>
 </resources>
