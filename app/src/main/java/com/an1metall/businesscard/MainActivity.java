@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String LANGUAGE_CODE_RU = "ru";
     private static final String LANGUAGE_CODE_EN = "en";
 
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR  = 0.9f;
-    private static final int ALPHA_ANIMATIONS_DURATION              = 200;
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
 
     private String language_code = LANGUAGE_CODE_RU;
 
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void bindActivity(){
+    private void bindActivity() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         title = (TextView) findViewById(R.id.title);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleToolbarTitleVisibility(float percentage) {
         if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
-            if(!titleVisible) {
+            if (!titleVisible) {
                 startAlphaAnimation(title, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 titleVisible = true;
             }
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void startAlphaAnimation (View view, long duration, int visibility) {
+    public static void startAlphaAnimation(View view, long duration, int visibility) {
         AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
                 ? new AlphaAnimation(0f, 1f)
                 : new AlphaAnimation(1f, 0f);
