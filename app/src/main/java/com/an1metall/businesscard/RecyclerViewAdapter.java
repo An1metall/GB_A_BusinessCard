@@ -30,9 +30,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private int lastPosition = -1;
 
 //    TODO: Фиговая идея... Придумать как обойтись без передачи ссылки на активити.
-//    Problem: при реализации OnClick во ViewHolder не получить SupportFragmentManager (для запуска диалога), который можно получить только из активити.
+//    Problem: при реализации OnClick во ViewHolder не получить SupportFragmentManager (для запуска диалога), 
+//    который можно получить только из активити.
 //    Suggestion: Наверняка нужно переделать реализацию OnClick и вызывать его из активити.
-//    Но тогда получаю другую проблему: нахожу нужный ViewHolder через recyclerView.findViewHolderForLayoutPosition(), но никак не могу получить доступ к полю viewHolder.cardData
+//    Но тогда получаю другую проблему: нахожу нужный ViewHolder через recyclerView.findViewHolderForLayoutPosition(),
+//    но никак не могу получить доступ к полю viewHolder.cardData
 
     private AppCompatActivity activity;
 
