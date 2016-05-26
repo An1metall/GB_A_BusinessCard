@@ -1,14 +1,7 @@
 package com.an1metall.businesscard;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Point;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
@@ -19,28 +12,26 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
+    public interface OnItemClickListener {
+        void onItemClick(Card item, int position);
+    }
+
     List<Card> cards;
 
     private int lastPosition = -1;
 
-//    TODO: Фиговая идея... Придумать как обойтись без передачи ссылки на активити.
-//    Problem: при реализации OnClick во ViewHolder не получить SupportFragmentManager (для запуска диалога), 
-//    который можно получить только из активити.
-//    Suggestion: Наверняка нужно переделать реализацию OnClick и вызывать его из активити.
-//    Но тогда получаю другую проблему: нахожу нужный ViewHolder через recyclerView.findViewHolderForLayoutPosition(),
-//    но никак не могу получить доступ к полю viewHolder.cardData
+    private Context context;
+    private final OnItemClickListener listener;
 
-    private AppCompatActivity activity;
-
-    RecyclerViewAdapter(AppCompatActivity activity, List<Card> cards) {
-        this.activity = activity;
+    RecyclerViewAdapter(Context context, List<Card> cards, OnItemClickListener listener) {
+        this.context = context;
         this.cards = cards;
+        this.listener = listener;
     }
 
     @Override
@@ -55,11 +46,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        viewHolder.cardName.setText(cards.get(i).name);
-        viewHolder.cardData.setText(cards.get(i).data);
-        viewHolder.cardPic.setImageResource(cards.get(i).picID);
-        setAnimation(viewHolder.cardView, i);
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        viewHolder.bindItem(cards.get(position), position, listener);
+        setAnimation(viewHolder.cardView, position);
     }
 
     @Override
@@ -71,7 +60,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if (position > lastPosition) {
             lastPosition = position;
 
-            view.setTranslationY(getScreenHeight(activity));
+            view.setTranslationY(getScreenHeight(context));
             view.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(3.f))
@@ -92,13 +81,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return screenHeight;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         CardView cardView;
         TextView cardName;
         TextView cardData;
         ImageView cardPic;
-        private Toast currentToast;
 
         public ViewHolder(View v) {
             super(v);
@@ -106,61 +94,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             cardName = (TextView) itemView.findViewById(R.id.card_name);
             cardData = (TextView) itemView.findViewById(R.id.card_data);
             cardPic = (ImageView) itemView.findViewById(R.id.card_pic);
-            v.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View view) {
-            int position = getLayoutPosition();
-            notifyItemChanged(position);
-            switch (position) {
-                case 1:
-                    sendViaEmail(cardData.getText().toString());
-                    break;
-                case 2:
-                    sendViaSkype(cardData.getText().toString());
-                    break;
-            }
-        }
+        public void bindItem(final Card item, final int position, final OnItemClickListener listener){
+            cardName.setText(item.getName());
+            cardData.setText(item.getData());
+            cardPic.setImageResource(item.getPicID());
 
-        private void sendViaEmail(String uri) {
-            if (isCallable(new Intent(Intent.ACTION_SENDTO).setData(Uri.parse("mailto:")))) {
-                Bundle bundle = new Bundle();
-                bundle.putString("uri", uri);
-
-                DatePickerDialogFragment dialog = new DatePickerDialogFragment();
-                dialog.setArguments(bundle);
-                dialog.show(activity.getSupportFragmentManager(), "DATE_PICKER");
-            }
-            else {
-                showToast(activity.getString(R.string.email_account));
-            }
-        }
-
-        private void sendViaSkype(String uri) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("skype:" + uri));
-            intent.setComponent(new ComponentName("com.skype.raider", "com.skype.raider.Main"));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            if (isCallable(intent)) {
-                activity.startActivity(intent);
-            } else {
-                showToast(activity.getString(R.string.skype_not_found));
-            }
-        }
-
-        private boolean isCallable(Intent intent) {
-            List<ResolveInfo> list = activity.getPackageManager().queryIntentActivities(intent,
-                    PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
-        }
-
-        public void showToast(String text) {
-            if (currentToast != null) {
-                currentToast.cancel();
-            }
-            currentToast = Toast.makeText(activity, text, Toast.LENGTH_SHORT);
-            currentToast.show();
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    notifyItemChanged(position);
+                    listener.onItemClick(item, position);
+                }
+            });
         }
     }
 }
