@@ -15,8 +15,8 @@
     </string-array>
     <integer-array name="card_pics">
         <item>@drawable/user</item>
-        <item>@drawable/email</item>
+        <item>@drawable/mail</item>
         <item>@drawable/skype</item>
-        <item>@drawable/skills</item>
+        <item>@drawable/skill</item>
     </integer-array>
 </resources>

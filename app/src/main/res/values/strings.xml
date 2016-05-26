@@ -2,6 +2,10 @@
     <string name="app_name">Business Card</string>
     <string name="header">header</string>
     <string name="about_me">ABOUT ME</string>
-
-    <string name="my_txt">Портретная ориентация</string>
+    <string name="menu_switch_language">Switch language</string>
+    <string name="invite_to_meeting">We would like to invite you for a meeting on </string>
+    <string name="date_picker_ok">OK</string>
+    <string name="date_piker_cancel">Cancel</string>
+    <string name="email_account">Setup you e-mail account first</string>
+    <string name="skype_not_found">Skype not found</string>
 </resources>
