@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -54,29 +53,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        if (intent.getStringExtra(EXTRA_STRING_NAME) != null) {
-            language_code = intent.getStringExtra(EXTRA_STRING_NAME);
-        }
+        resources = getResources();
 
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        android.content.res.Configuration conf = res.getConfiguration();
-        conf.locale = new Locale(language_code.toLowerCase());
-        res.updateConfiguration(conf, dm);
-
+        setLocale();
         setContentView(R.layout.activity_main);
         bindActivity();
+        initializeData();
 
         toolbar.inflateMenu(R.menu.main_menu);
 
         recyclerView.setHasFixedSize(true);
         rvLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(rvLayoutManager);
-
-        resources = getResources();
-        this.initializeData();
-
         rvAdapter = new RecyclerViewAdapter(this, cards, this);
         recyclerView.setAdapter(rvAdapter);
 
@@ -107,6 +95,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         for (int i = 0; i < names.length; i++) {
             cards.add(new Card(names[i], data[i], picsId.getResourceId(i, 0)));
         }
+        picsId.recycle();
+    }
+
+    private void setLocale(){
+        Intent intent = getIntent();
+        if (intent.getStringExtra(EXTRA_STRING_NAME) != null) {
+            language_code = intent.getStringExtra(EXTRA_STRING_NAME);
+        }
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        android.content.res.Configuration conf = resources.getConfiguration();
+        conf.locale = new Locale(language_code.toLowerCase());
+        resources.updateConfiguration(conf, dm);
     }
 
     public void changeLocale(MenuItem item) {
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         }
     }
 
-    public static void startAlphaAnimation(View view, long duration, int visibility) {
+    private static void startAlphaAnimation(View view, long duration, int visibility) {
         AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
                 ? new AlphaAnimation(0f, 1f)
                 : new AlphaAnimation(1f, 0f);
