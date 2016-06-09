@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,18 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.daimajia.swipe.SimpleSwipeListener;
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerSwipeAdapter<RecyclerViewAdapter.ViewHolder> {
 
     public interface OnItemClickListener {
         void onItemClick(Card item, int position);
@@ -32,6 +40,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.context = context;
         this.cards = cards;
         this.listener = listener;
+    }
+
+    @Override
+    public int getSwipeLayoutResourceId(int position) {
+        return 0;
     }
 
     @Override
@@ -83,25 +96,40 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        CardView cardView;
+        SwipeLayout cardView;
         TextView cardName;
         TextView cardData;
         ImageView cardPic;
+        ImageView cardBtnPic;
+        RelativeLayout cardLayout;
 
         public ViewHolder(View v) {
             super(v);
-            cardView = (CardView) itemView.findViewById(R.id.cv);
+            cardView = (SwipeLayout) itemView.findViewById(R.id.cv);
             cardName = (TextView) itemView.findViewById(R.id.card_name);
             cardData = (TextView) itemView.findViewById(R.id.card_data);
             cardPic = (ImageView) itemView.findViewById(R.id.card_pic);
+            cardBtnPic = (ImageView) itemView.findViewById(R.id.card_btn_pic);
+            cardLayout = (RelativeLayout) itemView.findViewById(R.id.card_layout);
         }
 
         public void bindItem(final Card item, final int position, final OnItemClickListener listener){
+
+            cardView.setShowMode(SwipeLayout.ShowMode.PullOut);
+            cardView.addSwipeListener(new SimpleSwipeListener(){
+                @Override
+                public void onOpen(SwipeLayout layout) {
+                    super.onOpen(layout);
+                    (YoYo.with(Techniques.Tada).duration(500).delay(100)).playOn(cardBtnPic);
+                }
+            });
+
             cardName.setText(item.getName());
             cardData.setText(item.getData());
             cardPic.setImageResource(item.getPicID());
+            cardBtnPic.setImageResource(item.getBtnPicID());
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            cardBtnPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     notifyItemChanged(position);

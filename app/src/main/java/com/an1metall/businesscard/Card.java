@@ -4,11 +4,13 @@ package com.an1metall.businesscard;
         private String name;
         private String data;
         private int picID;
+        private int btnPicID;
 
-        public Card(String name, String data, int picID) {
+        public Card(String name, String data, int picID, int btnPicID) {
             this.name = name;
             this.data = data;
             this.picID = picID;
+            this.btnPicID = btnPicID;
         }
 
         public String getName() {
@@ -21,5 +23,9 @@ package com.an1metall.businesscard;
 
         public int getPicID() {
             return picID;
+        }
+
+        public int getBtnPicID() {
+            return btnPicID;
         }
     }

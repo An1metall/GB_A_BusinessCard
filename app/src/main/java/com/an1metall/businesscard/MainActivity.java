@@ -1,18 +1,25 @@
 package com.an1metall.businesscard;
 
+import android.Manifest;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +30,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import com.daimajia.swipe.util.Attributes;
 
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnItemClickListener {
@@ -37,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private List<Card> cards;
     private Resources resources;
     private Toast currentToast;
+    private Intent intent;
+    private String uri;
+    PhoneCallListener phoneListener;
 
     private boolean titleVisible = false;
 
@@ -46,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
     private static final int ALPHA_ANIMATIONS_DURATION = 200;
+    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1001;
 
     private String language_code = LANGUAGE_CODE_RU;
 
@@ -66,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         rvLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(rvLayoutManager);
         rvAdapter = new RecyclerViewAdapter(this, cards, this);
+        ((RecyclerViewAdapter) rvAdapter).setMode(Attributes.Mode.Single);
         recyclerView.setAdapter(rvAdapter);
 
         startAlphaAnimation(title, 0, View.INVISIBLE);
@@ -91,15 +105,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         cards = new ArrayList<>();
         String[] names = resources.getStringArray(R.array.card_names);
         String[] data = resources.getStringArray(R.array.card_data);
-        TypedArray picsId = resources.obtainTypedArray(R.array.card_pics);
+        TypedArray cardPicsId = resources.obtainTypedArray(R.array.card_pics);
+        TypedArray cardBtnPicsId = resources.obtainTypedArray(R.array.card_btn);
         for (int i = 0; i < names.length; i++) {
-            cards.add(new Card(names[i], data[i], picsId.getResourceId(i, 0)));
+            cards.add(new Card(names[i], data[i], cardPicsId.getResourceId(i, 0), cardBtnPicsId.getResourceId(i, 0)));
         }
-        picsId.recycle();
+        cardPicsId.recycle();
+        cardBtnPicsId.recycle();
     }
 
-    private void setLocale(){
-        Intent intent = getIntent();
+    private void setLocale() {
+        intent = getIntent();
         if (intent.getStringExtra(EXTRA_STRING_NAME) != null) {
             language_code = intent.getStringExtra(EXTRA_STRING_NAME);
         }
@@ -110,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     }
 
     public void changeLocale(MenuItem item) {
-        Intent intent = getIntent();
+        intent = getIntent();
         if (language_code.equals(LANGUAGE_CODE_RU)) {
             language_code = LANGUAGE_CODE_EN;
         } else {
@@ -147,39 +163,77 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     @Override
     public void onItemClick(Card item, int position) {
+        intent = null;
+        uri = item.getData();
         switch (position) {
-            case 1:
-                sendViaEmail(item.getData());
+            case CardType.PHONE:
+                makePhoneCallWrapper();
                 break;
-            case 2:
-                sendViaSkype(item.getData());
+            case CardType.EMAIL:
+                sendViaEmail();
+                break;
+            case CardType.SKYPE:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("skype:" + uri));
+                intent.setComponent(new ComponentName("com.skype.raider", "com.skype.raider.Main"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                break;
+            case CardType.GITHUB:
+                uri = getResources().getString(R.string.github_url);
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                break;
+            case CardType.LINKEDIN:
+                uri = getResources().getString(R.string.linkedin_url);
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                break;
+            case CardType.SKILLS:
+                intent = new Intent(this, SkillsActivity.class);
                 break;
         }
+        if (intent != null)
+            if (isCallable(intent)) {
+                startActivity(intent);
+            } else showToast(getString(R.string.not_supported));
     }
 
-    private void sendViaEmail(String uri) {
-        if (isCallable(new Intent(Intent.ACTION_SENDTO).setData(Uri.parse("mailto:")))) {
+    private void sendViaEmail() {
+        if (isCallable(new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")))) {
             Bundle bundle = new Bundle();
             bundle.putString("uri", uri);
 
             DatePickerDialogFragment dialog = new DatePickerDialogFragment();
             dialog.setArguments(bundle);
             dialog.show(getSupportFragmentManager(), "DATE_PICKER");
-        }
-        else {
-            showToast(getString(R.string.email_account));
+        } else {
+            showToast(getString(R.string.not_supported));
         }
     }
 
-    private void sendViaSkype(String uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("skype:" + uri));
-        intent.setComponent(new ComponentName("com.skype.raider", "com.skype.raider.Main"));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    private void makePhoneCallWrapper() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_CALL_PHONE);
+                return;
+            }
+        }
+        makePhoneCall();
+    }
 
-        if (isCallable(intent)) {
-            startActivity(intent);
-        } else {
-            showToast(getString(R.string.skype_not_found));
+    private void makePhoneCall() {
+        intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + uri));
+        phoneListener = new PhoneCallListener();
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CALL_PHONE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    makePhoneCall();
+                }
+                return;
+            }
         }
     }
 
@@ -195,6 +249,31 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         }
         currentToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
         currentToast.show();
+    }
+
+    private class PhoneCallListener extends PhoneStateListener {
+
+        private boolean isPhoneCalling = false;
+
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+
+            if (TelephonyManager.CALL_STATE_OFFHOOK == state) {
+                isPhoneCalling = true;
+            }
+
+            if (TelephonyManager.CALL_STATE_IDLE == state) {
+                if (isPhoneCalling) {
+                    intent = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(
+                                    getBaseContext().getPackageName());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    isPhoneCalling = false;
+                }
+
+            }
+        }
     }
 
 }
