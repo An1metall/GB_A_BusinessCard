@@ -1,6 +1,5 @@
 package com.an1metall.businesscard;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,30 +8,23 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.daimajia.swipe.util.Attributes;
-
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnItemClickListener {
 
@@ -50,25 +42,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private String uri;
     PhoneCallListener phoneListener;
 
-    private boolean titleVisible = false;
-
-    private static final String EXTRA_STRING_NAME = "lang";
-    private static final String LANGUAGE_CODE_RU = "ru";
-    private static final String LANGUAGE_CODE_EN = "en";
-
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final int ALPHA_ANIMATIONS_DURATION = 200;
-    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1001;
-
-    private String language_code = LANGUAGE_CODE_RU;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         resources = getResources();
 
-        setLocale();
+        ActivityLocale.setLocale(this, getIntent());
         setContentView(R.layout.activity_main);
         bindActivity();
         initializeData();
@@ -82,16 +62,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         ((RecyclerViewAdapter) rvAdapter).setMode(Attributes.Mode.Single);
         recyclerView.setAdapter(rvAdapter);
 
-        startAlphaAnimation(title, 0, View.INVISIBLE);
-
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                int maxScroll = appBarLayout.getTotalScrollRange();
-                float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
-                handleToolbarTitleVisibility(percentage);
-            }
-        });
+        AppBarAnimation.startAlphaAnimation(title, 0, View.INVISIBLE);
+        appBarLayout.addOnOffsetChangedListener(new AppBarAnimation(title));
     }
 
     private void bindActivity() {
@@ -114,51 +86,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         cardBtnPicsId.recycle();
     }
 
-    private void setLocale() {
-        intent = getIntent();
-        if (intent.getStringExtra(EXTRA_STRING_NAME) != null) {
-            language_code = intent.getStringExtra(EXTRA_STRING_NAME);
-        }
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        android.content.res.Configuration conf = resources.getConfiguration();
-        conf.locale = new Locale(language_code.toLowerCase());
-        resources.updateConfiguration(conf, dm);
-    }
-
-    public void changeLocale(MenuItem item) {
-        intent = getIntent();
-        if (language_code.equals(LANGUAGE_CODE_RU)) {
-            language_code = LANGUAGE_CODE_EN;
-        } else {
-            language_code = LANGUAGE_CODE_RU;
-        }
-        intent.putExtra(EXTRA_STRING_NAME, language_code);
-        finish();
-        startActivity(intent);
-    }
-
-    private void handleToolbarTitleVisibility(float percentage) {
-        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
-            if (!titleVisible) {
-                startAlphaAnimation(title, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
-                titleVisible = true;
-            }
-        } else {
-            if (titleVisible) {
-                startAlphaAnimation(title, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
-                titleVisible = false;
-            }
-        }
-    }
-
-    private static void startAlphaAnimation(View view, long duration, int visibility) {
-        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
-                ? new AlphaAnimation(0f, 1f)
-                : new AlphaAnimation(1f, 0f);
-
-        alphaAnimation.setDuration(duration);
-        alphaAnimation.setFillAfter(true);
-        view.startAnimation(alphaAnimation);
+    public void onMenuItemClick(MenuItem item) {
+        ActivityLocale.changeLocale(this, getIntent());
     }
 
     @Override
@@ -167,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         uri = item.getData();
         switch (position) {
             case CardType.PHONE:
-                makePhoneCallWrapper();
+                makePhoneCall();
                 break;
             case CardType.EMAIL:
                 sendViaEmail();
@@ -208,33 +137,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         }
     }
 
-    private void makePhoneCallWrapper() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_CALL_PHONE);
-                return;
-            }
-        }
-        makePhoneCall();
-    }
-
     private void makePhoneCall() {
         intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + uri));
         phoneListener = new PhoneCallListener();
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CALL_PHONE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    makePhoneCall();
-                }
-                return;
-            }
-        }
     }
 
     private boolean isCallable(Intent intent) {

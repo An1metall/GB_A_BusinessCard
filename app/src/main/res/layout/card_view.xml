@@ -25,6 +25,7 @@
                 android:background="@drawable/card_shape_swipe"
                 android:gravity="center"
                 android:padding="16dp"
+                android:id="@+id/card_btn_layout"
                 >
 
                 <ImageView

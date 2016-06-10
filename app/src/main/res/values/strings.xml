@@ -15,9 +15,9 @@
                                 development in the field of computer science and to help utilize my knowledge and skills in the best possible way
                                 for innovative approach to real-world problems.</string>
     <string name="attitude">Attitude</string>
-    <string name="attitude_text">Logical approach to problems and fixation on them unless the are solved.
-                            /n/n
-                            Zeal to learn better methods of working with technology.
-                            /n/n
-                            Open minded and enthusiastic way of lifestyle.</string>
+    <string name="attitude_text">Logical approach to problems and fixation on them unless the are solved.\n\nZeal to learn better methods of working with technology.\n\nOpen minded and enthusiastic way of lifestyle.</string>
+    <string name="info_fragment">Info</string>
+    <string name="languages_fragment">Languages</string>
+    <string name="tools_fragment">Tools</string>
+    <string name="os_fragment">OS</string>
 </resources>

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Визитная карточка</string>
     <string name="header">header</string>
-    <string name="about_me">Бардашов Роман Валерьевчи</string>
+    <string name="about_me">Бардашов Роман Валерьевич</string>
     <string name="menu_switch_language">Переключить язык</string>
     <string name="invite_to_meeting">Приглашаем вас на встречу</string>
     <string name="date_picker_ok">Готово</string>
@@ -13,9 +13,9 @@
                                     для более грамотного использования своих навыков и знаний в инновационном
                                     подходе к решению проблем реального мира</string>
     <string name="attitude">Мироощущение</string>
-    <string name="attitude_text">Логический подходк проблемам и фиксация на них до полного их решения.
-                            /n/n
-                            Крайне усерден в изучении новых методов работы.
-                            /n/n
-                            Открыт к новым идеям и полон энтузиазма.</string>
+    <string name="attitude_text">Логический подходк проблемам и фиксация на них до полного их решения.\n\nКрайне усерден в изучении новых методов работы.\n\nОткрыт к новым идеям и полон энтузиазма.</string>
+    <string name="info_fragment">Информация</string>
+    <string name="languages_fragment">Языки</string>
+    <string name="tools_fragment">Инструменты</string>
+    <string name="os_fragment">ОС</string>
 </resources>

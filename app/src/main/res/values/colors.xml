@@ -11,4 +11,5 @@
     <color name="colorDivider">#B6B6B6</color>
     <color name="colorTransparent">#00000000</color>
     <color name="colorTint">#11000000</color>
+    <color name="colorNavigationBar">#605271</color>
 </resources>

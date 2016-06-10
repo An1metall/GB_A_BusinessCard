@@ -2,9 +2,7 @@ package com.an1metall.businesscard;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -102,6 +101,7 @@ public class RecyclerViewAdapter extends RecyclerSwipeAdapter<RecyclerViewAdapte
         ImageView cardPic;
         ImageView cardBtnPic;
         RelativeLayout cardLayout;
+        LinearLayout cardBtn;
 
         public ViewHolder(View v) {
             super(v);
@@ -111,6 +111,7 @@ public class RecyclerViewAdapter extends RecyclerSwipeAdapter<RecyclerViewAdapte
             cardPic = (ImageView) itemView.findViewById(R.id.card_pic);
             cardBtnPic = (ImageView) itemView.findViewById(R.id.card_btn_pic);
             cardLayout = (RelativeLayout) itemView.findViewById(R.id.card_layout);
+            cardBtn = (LinearLayout) itemView.findViewById(R.id.card_btn_layout);
         }
 
         public void bindItem(final Card item, final int position, final OnItemClickListener listener){
@@ -129,7 +130,7 @@ public class RecyclerViewAdapter extends RecyclerSwipeAdapter<RecyclerViewAdapte
             cardPic.setImageResource(item.getPicID());
             cardBtnPic.setImageResource(item.getBtnPicID());
 
-            cardBtnPic.setOnClickListener(new View.OnClickListener() {
+            cardBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     notifyItemChanged(position);
